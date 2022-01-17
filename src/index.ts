@@ -17,3 +17,29 @@ function animate() {
 }
 
 animate();
+
+window.addEventListener("keydown", ({ code }) => {
+  switch (code) {
+    case "KeyA":
+      mario.dx = -mario.speed;
+      break;
+    case "KeyD":
+      mario.dx = mario.speed;
+      console.log("Right");
+      break;
+    case "Space":
+      mario.dy -= 20;
+      break;
+  }
+});
+
+window.addEventListener("keyup", ({ code }) => {
+  switch (code) {
+    case "KeyA":
+      mario.dx = 0;
+      break;
+    case "KeyD":
+      mario.dx = 0;
+      break;
+  }
+});

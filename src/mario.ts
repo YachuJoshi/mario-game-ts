@@ -14,6 +14,7 @@ export class Mario {
   height: number;
   dx: number;
   dy: number;
+  speed: number;
 
   constructor(props: MarioProps) {
     this.x = props.x;
@@ -22,6 +23,7 @@ export class Mario {
     this.height = 30;
     this.dx = 0;
     this.dy = 1;
+    this.speed = 5;
   }
 
   draw(ctx: CanvasRenderingContext2D): void {
