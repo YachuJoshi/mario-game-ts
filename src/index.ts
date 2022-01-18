@@ -14,40 +14,58 @@ const keys = {
   isLeftPressed: false,
 };
 
-const platform = new Platform({
-  x: 200,
-  y: 200,
-});
+const platforms = [
+  new Platform({
+    x: 200,
+    y: 200,
+  }),
+  new Platform({
+    x: 500,
+    y: 300,
+  }),
+];
 
 function animate() {
   ctx.fillStyle = "white";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
-  platform.draw(ctx);
+  platforms.forEach((platform) => platform.update(ctx));
   mario.update(ctx);
 
   if (keys.isLeftPressed && mario.x > 100) {
     mario.dx = -mario.speed;
-  } else if (keys.isRightPressed && mario.x < 400) {
+  } else if (keys.isRightPressed && mario.x < 500) {
     mario.dx = mario.speed;
   } else {
     mario.dx = 0;
 
     if (keys.isLeftPressed && globalDistance > 0) {
-      globalDistance--;
+      globalDistance -= 5;
+      platforms.forEach((platform) => {
+        platform.dx = platform.speed;
+      });
     } else if (keys.isRightPressed) {
-      globalDistance++;
+      globalDistance += 5;
+      platforms.forEach((platform) => {
+        platform.dx = -platform.speed;
+      });
+    } else {
+      platforms.forEach((platform) => {
+        platform.dx = 0;
+      });
     }
   }
 
   // Mario & Platform Collision Detection
-  if (
-    mario.y + mario.height < platform.y &&
-    mario.y + mario.height + mario.dy >= platform.y &&
-    mario.x + mario.width > platform.x &&
-    mario.x < platform.x + platform.width
-  ) {
-    mario.dy = 0;
-  }
+  platforms.forEach((platform) => {
+    if (
+      mario.y + mario.height < platform.y &&
+      mario.y + mario.height + mario.dy >= platform.y &&
+      mario.x + mario.width > platform.x &&
+      mario.x < platform.x + platform.width
+    ) {
+      mario.dy = 0;
+    }
+  });
 
   requestAnimationFrame(animate);
 }
