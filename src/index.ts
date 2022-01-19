@@ -1,7 +1,7 @@
 import { initCanvas } from "./canvas";
 import { Mario } from "./mario";
 import { Platform } from "./platform";
-import { getBackgroundInstance } from "./background";
+import { getBackgroundInstance, getHillsInstance } from "./background";
 import "./style.css";
 
 const { canvas, ctx } = initCanvas();
@@ -14,6 +14,7 @@ const keys: {
   [key: string]: boolean;
 } = {};
 const background = getBackgroundInstance();
+const hills = getHillsInstance();
 
 const platforms = [
   new Platform({
@@ -30,6 +31,7 @@ function animate() {
   ctx.fillStyle = "white";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
   background.draw(ctx);
+  hills.update(ctx);
   platforms.forEach((platform) => platform.update(ctx));
   mario.update(ctx);
 
@@ -38,9 +40,10 @@ function animate() {
     platforms.forEach((platform) => {
       platform.dx = 0;
     });
+    hills.dx = 0;
   } else if (keys["KeyA"] && mario.x > 100) {
     mario.dx = -mario.speed;
-  } else if (keys["KeyD"] && mario.x < 800) {
+  } else if (keys["KeyD"] && mario.x < 500) {
     mario.dx = mario.speed;
   } else {
     mario.dx = 0;
@@ -49,15 +52,18 @@ function animate() {
       platforms.forEach((platform) => {
         platform.dx = platform.speed;
       });
+      hills.dx = hills.speed;
     } else if (keys["KeyD"]) {
       globalDistance += 5;
       platforms.forEach((platform) => {
         platform.dx = -platform.speed;
       });
+      hills.dx = -hills.speed;
     } else {
       platforms.forEach((platform) => {
         platform.dx = 0;
       });
+      hills.dx = 0;
     }
   }
 
