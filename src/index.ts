@@ -1,6 +1,7 @@
 import { initCanvas } from "./canvas";
 import { Mario } from "./mario";
 import { Platform } from "./platform";
+import { getBackgroundInstance } from "./background";
 import "./style.css";
 
 const { canvas, ctx } = initCanvas();
@@ -9,41 +10,46 @@ const mario = new Mario({
   y: 100,
 });
 let globalDistance = 0;
-const keys = {
-  isRightPressed: false,
-  isLeftPressed: false,
-};
+const keys: {
+  [key: string]: boolean;
+} = {};
+const background = getBackgroundInstance();
 
 const platforms = [
   new Platform({
-    x: 200,
-    y: 200,
+    x: -1,
+    y: 608,
   }),
   new Platform({
-    x: 500,
-    y: 300,
+    x: 576,
+    y: 608,
   }),
 ];
 
 function animate() {
   ctx.fillStyle = "white";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
+  background.draw(ctx);
   platforms.forEach((platform) => platform.update(ctx));
   mario.update(ctx);
 
-  if (keys.isLeftPressed && mario.x > 100) {
+  if (keys["KeyA"] && keys["KeyD"]) {
+    mario.dx = 0;
+    platforms.forEach((platform) => {
+      platform.dx = 0;
+    });
+  } else if (keys["KeyA"] && mario.x > 100) {
     mario.dx = -mario.speed;
-  } else if (keys.isRightPressed && mario.x < 500) {
+  } else if (keys["KeyD"] && mario.x < 800) {
     mario.dx = mario.speed;
   } else {
     mario.dx = 0;
-
-    if (keys.isLeftPressed && globalDistance > 0) {
+    if (keys["KeyA"] && globalDistance > 0) {
       globalDistance -= 5;
       platforms.forEach((platform) => {
         platform.dx = platform.speed;
       });
-    } else if (keys.isRightPressed) {
+    } else if (keys["KeyD"]) {
       globalDistance += 5;
       platforms.forEach((platform) => {
         platform.dx = -platform.speed;
@@ -75,10 +81,10 @@ animate();
 window.addEventListener("keydown", ({ code }) => {
   switch (code) {
     case "KeyA":
-      keys.isLeftPressed = true;
+      keys[code] = true;
       break;
     case "KeyD":
-      keys.isRightPressed = true;
+      keys[code] = true;
       break;
     case "Space":
       mario.dy -= 20;
@@ -89,10 +95,10 @@ window.addEventListener("keydown", ({ code }) => {
 window.addEventListener("keyup", ({ code }) => {
   switch (code) {
     case "KeyA":
-      keys.isLeftPressed = false;
+      keys[code] = false;
       break;
     case "KeyD":
-      keys.isRightPressed = false;
+      keys[code] = false;
       break;
   }
 });
