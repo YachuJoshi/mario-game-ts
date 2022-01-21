@@ -1,56 +1,71 @@
 import { initCanvas } from "./canvas";
 import { Mario } from "./mario";
 import { Platform } from "./platform";
-import { getBackgroundInstance, getHillsInstance } from "./background";
+import { MAP_WIDTH, PLATFORM_WIDTH } from "./base";
+import { Generics, getBackgroundInstance, getHillInstance } from "./generics";
 import "./style.css";
 
-const MAP_WIDTH = 7000;
-const platforms = [
-  new Platform({
-    x: -1,
-    y: 608,
-  }),
-];
-
-const PLATFORM_WIDTH = 580;
-
-for (let i = 1, j = 0; i < MAP_WIDTH / PLATFORM_WIDTH; i++, j++) {
-  const prevX = platforms[j].x;
-  const GAP = Math.random() * 100 + 120;
-  platforms.push(
-    new Platform({
-      x: prevX + PLATFORM_WIDTH + GAP,
-      y: 608,
-    })
-  );
-}
-
 const { canvas, ctx } = initCanvas();
-const mario = new Mario({
-  x: 100,
-  y: 100,
-});
-let globalDistance = 0;
 const keys: {
   [key: string]: boolean;
 } = {};
-const background = getBackgroundInstance();
-const hills = getHillsInstance();
 
-function animate() {
+let mario: Mario;
+let platforms: Platform[];
+let globalDistance: number;
+let background: Generics;
+let hill: Generics;
+
+function getPlatforms() {
+  const platforms: Platform[] = [
+    new Platform({
+      x: -1,
+      y: 608,
+    }),
+  ];
+  for (let i = 1, j = 0; i < MAP_WIDTH / PLATFORM_WIDTH; i++, j++) {
+    const prevX = platforms[j].x;
+    const GAP = Math.random() * 100 + 120;
+    platforms.push(
+      new Platform({
+        x: prevX + PLATFORM_WIDTH + GAP,
+        y: 608,
+      })
+    );
+  }
+  return platforms;
+}
+
+function init() {
+  mario = new Mario({
+    x: 100,
+    y: 100,
+  });
+  platforms = getPlatforms();
+  background = getBackgroundInstance();
+  hill = getHillInstance();
+  globalDistance = 0;
+}
+
+function draw() {
   ctx.fillStyle = "white";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
   background.draw(ctx);
-  hills.update(ctx);
+  hill.update(ctx);
   platforms.forEach((platform) => platform.update(ctx));
   mario.update(ctx);
+}
 
+function animate() {
+  draw();
+
+  // Mario, Platform & Hill movement
   if (keys["KeyA"] && keys["KeyD"]) {
     mario.dx = 0;
     platforms.forEach((platform) => {
       platform.dx = 0;
     });
-    hills.dx = 0;
+    hill.dx = 0;
   } else if (keys["KeyA"] && mario.x > 100) {
     mario.dx = -mario.speed;
   } else if (keys["KeyD"] && mario.x < 500) {
@@ -62,18 +77,18 @@ function animate() {
       platforms.forEach((platform) => {
         platform.dx = platform.speed;
       });
-      hills.dx = hills.speed;
+      hill.dx = hill.speed;
     } else if (keys["KeyD"]) {
       globalDistance++;
       platforms.forEach((platform) => {
         platform.dx = -platform.speed;
       });
-      hills.dx = -hills.speed;
+      hill.dx = -hill.speed;
     } else {
       platforms.forEach((platform) => {
         platform.dx = 0;
       });
-      hills.dx = 0;
+      hill.dx = 0;
     }
   }
 
@@ -96,6 +111,7 @@ function animate() {
   requestAnimationFrame(animate);
 }
 
+init();
 animate();
 
 window.addEventListener("keydown", ({ code }) => {

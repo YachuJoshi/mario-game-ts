@@ -6,7 +6,7 @@ interface Position {
   x: number;
   y: number;
 }
-class Generics {
+export class Generics {
   x: number;
   y: number;
   image: HTMLImageElement;
@@ -46,6 +46,6 @@ export function getBackgroundInstance() {
   return new Generics(background);
 }
 
-export function getHillsInstance() {
+export function getHillInstance() {
   return new Generics(hills, { x: -1, y: 28 });
 }
