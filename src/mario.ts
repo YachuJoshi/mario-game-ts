@@ -23,7 +23,7 @@ export class Mario {
     this.height = 30;
     this.dx = 0;
     this.dy = 1;
-    this.speed = 5;
+    this.speed = 8;
   }
 
   draw(ctx: CanvasRenderingContext2D): void {

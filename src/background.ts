@@ -28,7 +28,7 @@ class Generics {
     this.width = this.image.width;
     this.height = this.image.height;
     this.dx = 0;
-    this.speed = 3;
+    this.speed = 6;
   }
 
   draw(ctx: CanvasRenderingContext2D): void {

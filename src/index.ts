@@ -4,6 +4,27 @@ import { Platform } from "./platform";
 import { getBackgroundInstance, getHillsInstance } from "./background";
 import "./style.css";
 
+const MAP_WIDTH = 7000;
+const platforms = [
+  new Platform({
+    x: -1,
+    y: 608,
+  }),
+];
+
+const PLATFORM_WIDTH = 580;
+
+for (let i = 1, j = 0; i < MAP_WIDTH / PLATFORM_WIDTH; i++, j++) {
+  const prevX = platforms[j].x;
+  const GAP = Math.random() * 100 + 120;
+  platforms.push(
+    new Platform({
+      x: prevX + PLATFORM_WIDTH + GAP,
+      y: 608,
+    })
+  );
+}
+
 const { canvas, ctx } = initCanvas();
 const mario = new Mario({
   x: 100,
@@ -15,17 +36,6 @@ const keys: {
 } = {};
 const background = getBackgroundInstance();
 const hills = getHillsInstance();
-
-const platforms = [
-  new Platform({
-    x: -1,
-    y: 608,
-  }),
-  new Platform({
-    x: 576,
-    y: 608,
-  }),
-];
 
 function animate() {
   ctx.fillStyle = "white";
@@ -48,13 +58,13 @@ function animate() {
   } else {
     mario.dx = 0;
     if (keys["KeyA"] && globalDistance > 0) {
-      globalDistance -= 5;
+      globalDistance--;
       platforms.forEach((platform) => {
         platform.dx = platform.speed;
       });
       hills.dx = hills.speed;
     } else if (keys["KeyD"]) {
-      globalDistance += 5;
+      globalDistance++;
       platforms.forEach((platform) => {
         platform.dx = -platform.speed;
       });
@@ -79,6 +89,10 @@ function animate() {
     }
   });
 
+  if (globalDistance >= 1450) {
+    console.log("You Win");
+  }
+
   requestAnimationFrame(animate);
 }
 
@@ -93,7 +107,7 @@ window.addEventListener("keydown", ({ code }) => {
       keys[code] = true;
       break;
     case "Space":
-      mario.dy -= 20;
+      mario.dy -= 25;
       break;
   }
 });

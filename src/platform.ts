@@ -20,7 +20,7 @@ export class Platform {
     this.y = props.y;
     this.width = this.image.width;
     this.height = this.image.height;
-    this.speed = 3;
+    this.speed = 6;
     this.dx = 0;
   }
 
