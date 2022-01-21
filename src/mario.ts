@@ -37,9 +37,7 @@ export class Mario {
     this.x += this.dx;
     this.y += this.dy;
 
-    if (this.y + this.height + this.dy >= CANVAS_HEIGHT) {
-      this.dy = 0;
-    } else {
+    if (this.y + this.height + this.dy < CANVAS_HEIGHT) {
       this.dy += gravity;
     }
   }

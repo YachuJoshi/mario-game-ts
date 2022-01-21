@@ -1,5 +1,6 @@
-import { initCanvas } from "./canvas";
 import { Mario } from "./mario";
+import { initCanvas } from "./canvas";
+import { CANVAS_HEIGHT } from "./base";
 import { Platform } from "./platform";
 import { Generics } from "./generics";
 import {
@@ -7,6 +8,7 @@ import {
   getBackgroundInstance,
   getHillInstance,
 } from "./utils";
+
 import "./style.css";
 
 const { canvas, ctx } = initCanvas();
@@ -88,8 +90,14 @@ function animate() {
     }
   });
 
+  // Win Condition
   if (globalDistance >= 1450) {
     console.log("You Win");
+  }
+
+  // Lose Condition
+  if (mario.y > CANVAS_HEIGHT) {
+    init();
   }
 
   requestAnimationFrame(animate);
