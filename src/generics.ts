@@ -1,5 +1,3 @@
-import background from "./image/background.png";
-import hills from "./image/hills.png";
 import { createNewImage } from "./utils";
 
 interface Position {
@@ -42,10 +40,3 @@ export class Generics {
   }
 }
 
-export function getBackgroundInstance() {
-  return new Generics(background);
-}
-
-export function getHillInstance() {
-  return new Generics(hills, { x: -1, y: 28 });
-}

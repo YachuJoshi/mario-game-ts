@@ -1,8 +1,12 @@
 import { initCanvas } from "./canvas";
 import { Mario } from "./mario";
 import { Platform } from "./platform";
-import { MAP_WIDTH, PLATFORM_WIDTH } from "./base";
-import { Generics, getBackgroundInstance, getHillInstance } from "./generics";
+import { Generics } from "./generics";
+import {
+  generatePlatform,
+  getBackgroundInstance,
+  getHillInstance,
+} from "./utils";
 import "./style.css";
 
 const { canvas, ctx } = initCanvas();
@@ -16,32 +20,12 @@ let globalDistance: number;
 let background: Generics;
 let hill: Generics;
 
-function getPlatforms() {
-  const platforms: Platform[] = [
-    new Platform({
-      x: -1,
-      y: 608,
-    }),
-  ];
-  for (let i = 1, j = 0; i < MAP_WIDTH / PLATFORM_WIDTH; i++, j++) {
-    const prevX = platforms[j].x;
-    const GAP = Math.random() * 100 + 120;
-    platforms.push(
-      new Platform({
-        x: prevX + PLATFORM_WIDTH + GAP,
-        y: 608,
-      })
-    );
-  }
-  return platforms;
-}
-
 function init() {
   mario = new Mario({
     x: 100,
     y: 100,
   });
-  platforms = getPlatforms();
+  platforms = generatePlatform();
   background = getBackgroundInstance();
   hill = getHillInstance();
   globalDistance = 0;
