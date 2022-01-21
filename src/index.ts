@@ -8,19 +8,22 @@ import {
   getBackgroundInstance,
   getHillInstance,
 } from "./utils";
-
 import "./style.css";
 
 const { canvas, ctx } = initCanvas();
 const keys: {
   [key: string]: boolean;
-} = {};
+} = {
+  KeyA: false,
+  KeyD: false,
+};
 
 let mario: Mario;
 let platforms: Platform[];
 let globalDistance: number;
 let background: Generics;
 let hill: Generics;
+let lastKey: string;
 
 function init() {
   mario = new Mario({
@@ -90,6 +93,49 @@ function animate() {
     }
   });
 
+  // Sprite Correction
+  if (
+    keys["KeyD"] &&
+    lastKey === "right" &&
+    mario.currentSprite !== mario.sprites.run.right
+  ) {
+    mario.setSprite(
+      <HTMLImageElement>mario.sprites.run.right,
+      <number>mario.sprites.run.cropWidth,
+      <number>mario.sprites.run.width
+    );
+  } else if (
+    keys["KeyA"] &&
+    lastKey === "left" &&
+    mario.currentSprite !== mario.sprites.run.left
+  ) {
+    mario.setSprite(
+      <HTMLImageElement>mario.sprites.run.left,
+      <number>mario.sprites.run.cropWidth,
+      <number>mario.sprites.run.width
+    );
+  } else if (
+    !keys["KeyA"] &&
+    lastKey === "left" &&
+    mario.currentSprite !== mario.sprites.stand.left
+  ) {
+    mario.setSprite(
+      <HTMLImageElement>mario.sprites.stand.left,
+      <number>mario.sprites.stand.cropWidth,
+      <number>mario.sprites.stand.width
+    );
+  } else if (
+    !keys["KeyD"] &&
+    lastKey === "right" &&
+    mario.currentSprite !== mario.sprites.stand.right
+  ) {
+    mario.setSprite(
+      <HTMLImageElement>mario.sprites.stand.right,
+      <number>mario.sprites.stand.cropWidth,
+      <number>mario.sprites.stand.width
+    );
+  }
+
   // Win Condition
   if (globalDistance >= 1450) {
     console.log("You Win");
@@ -110,12 +156,14 @@ window.addEventListener("keydown", ({ code }) => {
   switch (code) {
     case "KeyA":
       keys[code] = true;
+      lastKey = "left";
       break;
     case "KeyD":
       keys[code] = true;
+      lastKey = "right";
       break;
     case "Space":
-      mario.dy -= 25;
+      mario.dy -= 20;
       break;
   }
 });

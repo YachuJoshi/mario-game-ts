@@ -12,7 +12,7 @@ export function createNewImage(src: string): HTMLImageElement {
   return image;
 }
 
-export function generatePlatform() {
+export function generatePlatform(): Platform[] {
   const platforms: Platform[] = [
     new Platform({
       x: -1,
@@ -32,10 +32,10 @@ export function generatePlatform() {
   return platforms;
 }
 
-export function getBackgroundInstance() {
+export function getBackgroundInstance(): Generics {
   return new Generics(background);
 }
 
-export function getHillInstance() {
+export function getHillInstance(): Generics {
   return new Generics(hills, { x: -1, y: 28 });
 }
