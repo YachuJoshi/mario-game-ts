@@ -33,10 +33,7 @@ export class Generics {
     ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
   }
 
-  update(ctx: CanvasRenderingContext2D): void {
-    this.draw(ctx);
-
+  update(): void {
     this.x += this.dx;
   }
 }
-

@@ -12,11 +12,19 @@ interface MarioProps {
 
 interface Sprite {
   [key: string]: {
-    [key: string]: number | HTMLImageElement;
+    [key: string]: HTMLImageElement;
   };
 }
 
 const gravity = 1.5;
+const spriteCropW = {
+  stand: 177,
+  run: 341,
+};
+const spriteWidth = {
+  stand: 66,
+  run: 127.875,
+};
 
 export class Mario {
   x: number;
@@ -35,7 +43,7 @@ export class Mario {
     this.x = props.x;
     this.y = props.y;
     this.height = 150;
-    this.width = 66;
+    this.width = spriteWidth["stand"];
     this.dx = 0;
     this.dy = 1;
     this.speed = 8;
@@ -44,18 +52,14 @@ export class Mario {
       stand: {
         right: createNewImage(spriteStandRight),
         left: createNewImage(spriteStandLeft),
-        cropWidth: 177,
-        width: 66,
       },
       run: {
         right: createNewImage(spriteRunRight),
         left: createNewImage(spriteRunLeft),
-        cropWidth: 341,
-        width: 127.875,
       },
     };
-    this.currentSprite = <HTMLImageElement>this.sprites.stand.right;
-    this.currentCropWidth = 177;
+    this.currentSprite = this.sprites.stand.right;
+    this.currentCropWidth = spriteCropW["stand"];
   }
 
   draw(ctx: CanvasRenderingContext2D): void {
@@ -72,13 +76,12 @@ export class Mario {
     );
   }
 
-  update(ctx: CanvasRenderingContext2D): void {
+  update(): void {
     this.frames++;
     if (this.frames > 28) {
       this.frames = 0;
     }
 
-    this.draw(ctx);
     this.x += this.dx;
     this.y += this.dy;
 
@@ -87,14 +90,13 @@ export class Mario {
     }
   }
 
-  setSprite(
-    currSprite: HTMLImageElement,
-    currCropWidth: number,
-    width: number
-  ): void {
+  setSprite(currSprite: HTMLImageElement, isRunning: boolean): void {
+    const cropW = isRunning ? spriteCropW["run"] : spriteCropW["stand"];
+    const width = isRunning ? spriteWidth["run"] : spriteWidth["stand"];
+
     this.frames = 1;
     this.currentSprite = currSprite;
-    this.currentCropWidth = currCropWidth;
+    this.currentCropWidth = cropW;
     this.width = width;
   }
 }
