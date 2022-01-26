@@ -1,5 +1,9 @@
 @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500&display=swap");
 
+:root {
+  --btn-color: royalblue;
+}
+
 *,
 *::before,
 *::after {
@@ -20,4 +24,32 @@ body {
   justify-content: center;
   align-items: center;
   background-color: #222;
+}
+
+.btn {
+  position: absolute;
+  border: none;
+  background-color: var(--btn-color);
+  color: white;
+  padding: 12px 48px;
+  font-family: inherit;
+  font-size: 15px;
+  border-radius: 100px;
+  cursor: pointer;
+  outline: none;
+  transition: all 0.3s ease;
+}
+
+.btn:active {
+  transform: translateY(8px);
+}
+
+#btn-reset {
+  right: 180px;
+  top: 20px;
+}
+
+#btn-save {
+  right: 20px;
+  top: 20px;
 }

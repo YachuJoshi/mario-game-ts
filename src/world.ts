@@ -5,9 +5,10 @@ import { Platform } from "./platform";
 import { Generics } from "./generics";
 import { Goomba } from "./goomba";
 import {
-  generatePlatform,
+  generateNewPlatforms,
   getBackgroundInstance,
   getHillInstance,
+  regeneratePlatforms,
 } from "./utils";
 
 class World {
@@ -37,18 +38,25 @@ class World {
       KeyA: false,
       KeyD: false,
     };
+
+    const state = JSON.parse(localStorage.getItem("state") || "{}");
     this.mario = new Mario({
-      x: 100,
+      x: state?.mario?.x || 100,
       y: 100,
     });
     this.goomba = new Goomba({
-      x: 900,
+      x: state?.goomba?.x || 900,
       y: 522,
     });
-    this.platforms = generatePlatform();
+    this.platforms = state?.platforms
+      ? regeneratePlatforms(state.platforms)
+      : generateNewPlatforms();
     this.background = getBackgroundInstance();
-    this.hill = getHillInstance();
-    this.scrollOffset = 0;
+    this.hill = getHillInstance({
+      x: state?.hill?.x || -1,
+      y: state?.hill?.y || 28,
+    });
+    this.scrollOffset = state.scrollOffset || (() => 0)();
   }
 
   renderLoop(ctx: CanvasRenderingContext2D): void {
@@ -80,6 +88,8 @@ class World {
     if (this.mario.y > CANVAS_HEIGHT) {
       this.init();
     }
+
+    console.log(this.scrollOffset);
   }
 
   start = (): void => {
@@ -208,6 +218,24 @@ class World {
       return;
     }
   }
+
+  save = (): void => {
+    const state = {
+      mario: this.mario,
+      goomba: this.goomba,
+      platforms: this.platforms,
+      scrollOffset: this.scrollOffset,
+      background: this.background,
+      hill: this.hill,
+      lastKey: this.lastKey,
+    };
+    localStorage.setItem("state", JSON.stringify(state));
+  };
+
+  reset = (): void => {
+    localStorage.clear();
+    location.reload();
+  };
 }
 
 export const world = new World();

@@ -6,13 +6,18 @@ import { Platform } from "./platform";
 
 import { MAP_WIDTH, PLATFORM_WIDTH } from "./base";
 
+interface Position {
+  x: number;
+  y: number;
+}
+
 export function createNewImage(src: string): HTMLImageElement {
   const image: HTMLImageElement = new Image();
   image.src = src;
   return image;
 }
 
-export function generatePlatform(): Platform[] {
+export function generateNewPlatforms(): Platform[] {
   const platforms: Platform[] = [
     new Platform({
       x: -1,
@@ -32,10 +37,26 @@ export function generatePlatform(): Platform[] {
   return platforms;
 }
 
+export function extractPosition<T extends Position>(array: T[]): Position[] {
+  return array.map((item) => ({ x: item.x, y: item.y }));
+}
+
+export function regeneratePlatforms(platforms: Platform[]): Platform[] {
+  const positions = extractPosition(platforms);
+
+  return positions.map(
+    (position) =>
+      new Platform({
+        x: position.x,
+        y: position.y,
+      })
+  );
+}
+
 export function getBackgroundInstance(): Generics {
   return new Generics(background);
 }
 
-export function getHillInstance(): Generics {
-  return new Generics(hills, { x: -1, y: 28 });
+export function getHillInstance(pos: Position): Generics {
+  return new Generics(hills, pos);
 }
