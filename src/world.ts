@@ -62,25 +62,21 @@ class World {
   renderLoop(ctx: CanvasRenderingContext2D): void {
     ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     this.background.draw(ctx);
-    this.hill.draw(ctx);
-    this.platforms.forEach((platform) => platform.draw(ctx));
+    this.hill.draw(ctx, this.scrollOffset);
+    this.platforms.forEach((platform) => platform.draw(ctx, this.scrollOffset));
     this.goomba.draw(ctx);
     this.mario.draw(ctx);
   }
 
   gameLoop(): void {
     this.mario.update();
-    this.hill.update();
-    this.platforms.forEach((platform) => platform.update());
 
     this.animateCharaters();
     this.marioPlatformCollision();
-
-    const isRunning = this.keys["KeyA"] || this.keys["KeyD"];
-    this.setMarioSprite(isRunning);
+    this.setMarioSprite();
 
     // Win Condition
-    if (this.scrollOffset >= 1450) {
+    if (this.scrollOffset >= 8700) {
       console.log("You Win");
     }
 
@@ -88,16 +84,81 @@ class World {
     if (this.mario.y > CANVAS_HEIGHT) {
       this.init();
     }
-
-    console.log(this.scrollOffset);
   }
 
-  start = (): void => {
-    this.renderLoop(this.ctx);
-    this.gameLoop();
+  setMarioSprite() {
+    if (
+      this.keys["KeyD"] &&
+      this.lastKey === "right" &&
+      this.mario.currentSprite !== this.mario.sprites.run.right
+    ) {
+      return this.mario.setSprite(this.mario.sprites.run.right, 341, 127.875);
+    }
 
-    requestAnimationFrame(this.start);
-  };
+    if (
+      this.keys["KeyA"] &&
+      this.lastKey === "left" &&
+      this.mario.currentSprite !== this.mario.sprites.run.left
+    ) {
+      return this.mario.setSprite(this.mario.sprites.run.left, 341, 127.875);
+    }
+
+    if (
+      !this.keys["KeyA"] &&
+      this.lastKey === "left" &&
+      this.mario.currentSprite !== this.mario.sprites.stand.left
+    ) {
+      return this.mario.setSprite(this.mario.sprites.stand.left, 177, 66);
+    }
+
+    if (
+      !this.keys["KeyD"] &&
+      this.lastKey === "right" &&
+      this.mario.currentSprite !== this.mario.sprites.stand.right
+    ) {
+      return this.mario.setSprite(this.mario.sprites.stand.right, 177, 66);
+    }
+  }
+
+  animateCharaters(): void {
+    if (this.keys["KeyA"] && this.keys["KeyD"]) {
+      this.mario.dx = 0;
+      return;
+    }
+
+    if (this.keys["KeyA"] && this.mario.x > 100) {
+      this.mario.dx = -this.mario.speed;
+      return;
+    }
+    if (this.keys["KeyD"] && this.mario.x < 400) {
+      this.mario.dx = this.mario.speed;
+      return;
+    }
+
+    this.mario.dx = 0;
+    if (this.keys["KeyA"] && this.scrollOffset > 0) {
+      this.scrollOffset -= 6;
+      return;
+    }
+
+    if (this.keys["KeyD"]) {
+      this.scrollOffset += 6;
+      return;
+    }
+  }
+
+  marioPlatformCollision(): void {
+    this.platforms.forEach((platform) => {
+      if (
+        this.mario.y + this.mario.height < platform.y &&
+        this.mario.y + this.mario.height + this.mario.dy >= platform.y &&
+        this.mario.x + this.mario.width > platform.x - this.scrollOffset &&
+        this.mario.x < platform.x + platform.width - this.scrollOffset
+      ) {
+        this.mario.dy = 0;
+      }
+    });
+  }
 
   setupEventListener(): void {
     addEventListener("keydown", ({ code }) => {
@@ -128,96 +189,12 @@ class World {
     });
   }
 
-  animateCharaters(): void {
-    if (this.keys["KeyA"] && this.keys["KeyD"]) {
-      this.mario.dx = 0;
-      this.platforms.forEach((platform) => {
-        platform.dx = 0;
-      });
-      this.hill.dx = 0;
-    } else if (this.keys["KeyA"] && this.mario.x > 100) {
-      this.mario.dx = -this.mario.speed;
-    } else if (this.keys["KeyD"] && this.mario.x < 400) {
-      this.mario.dx = this.mario.speed;
-    } else {
-      this.mario.dx = 0;
-      if (this.keys["KeyA"] && this.scrollOffset > 0) {
-        this.scrollOffset--;
-        this.platforms.forEach((platform) => {
-          platform.dx = platform.speed;
-        });
-        this.hill.dx = this.hill.speed;
-      } else if (this.keys["KeyD"]) {
-        this.scrollOffset++;
-        this.platforms.forEach((platform) => {
-          platform.dx = -platform.speed;
-        });
-        this.hill.dx = -this.hill.speed;
-      } else {
-        this.platforms.forEach((platform) => {
-          platform.dx = 0;
-        });
-        this.hill.dx = 0;
-      }
-    }
-  }
+  start = (): void => {
+    this.renderLoop(this.ctx);
+    this.gameLoop();
 
-  marioPlatformCollision(): void {
-    this.platforms.forEach((platform) => {
-      if (
-        this.mario.y + this.mario.height < platform.y &&
-        this.mario.y + this.mario.height + this.mario.dy >= platform.y &&
-        this.mario.x + this.mario.width > platform.x &&
-        this.mario.x < platform.x + platform.width
-      ) {
-        this.mario.dy = 0;
-      }
-    });
-  }
-
-  setMarioSprite(isRunning: boolean): void {
-    if (
-      this.keys["KeyD"] &&
-      this.lastKey === "right" &&
-      this.mario.currentSprite !== this.mario.sprites.run.right
-    ) {
-      this.mario.setSprite(
-        <HTMLImageElement>this.mario.sprites.run.right,
-        isRunning
-      );
-      return;
-    } else if (
-      this.keys["KeyA"] &&
-      this.lastKey === "left" &&
-      this.mario.currentSprite !== this.mario.sprites.run.left
-    ) {
-      this.mario.setSprite(
-        <HTMLImageElement>this.mario.sprites.run.left,
-        isRunning
-      );
-      return;
-    } else if (
-      !this.keys["KeyA"] &&
-      this.lastKey === "left" &&
-      this.mario.currentSprite !== this.mario.sprites.stand.left
-    ) {
-      this.mario.setSprite(
-        <HTMLImageElement>this.mario.sprites.stand.left,
-        isRunning
-      );
-      return;
-    } else if (
-      !this.keys["KeyD"] &&
-      this.lastKey === "right" &&
-      this.mario.currentSprite !== this.mario.sprites.stand.right
-    ) {
-      this.mario.setSprite(
-        <HTMLImageElement>this.mario.sprites.stand.right,
-        isRunning
-      );
-      return;
-    }
-  }
+    requestAnimationFrame(this.start);
+  };
 
   save = (): void => {
     const state = {

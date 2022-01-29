@@ -90,10 +90,7 @@ export class Mario {
     }
   }
 
-  setSprite(currSprite: HTMLImageElement, isRunning: boolean): void {
-    const cropW = isRunning ? spriteCropW["run"] : spriteCropW["stand"];
-    const width = isRunning ? spriteWidth["run"] : spriteWidth["stand"];
-
+  setSprite(currSprite: HTMLImageElement, cropW: number, width: number): void {
     this.frames = 1;
     this.currentSprite = currSprite;
     this.currentCropWidth = cropW;

@@ -10,8 +10,6 @@ export class Generics {
   image: HTMLImageElement;
   width: number;
   height: number;
-  dx: number;
-  speed: number;
 
   constructor(
     imageSrc: string,
@@ -25,15 +23,10 @@ export class Generics {
     this.image = createNewImage(imageSrc);
     this.width = this.image.width;
     this.height = this.image.height;
-    this.dx = 0;
-    this.speed = 6;
   }
 
-  draw(ctx: CanvasRenderingContext2D): void {
-    ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
-  }
-
-  update(): void {
-    this.x += this.dx;
+  draw(ctx: CanvasRenderingContext2D, offset: number = 0): void {
+    const renderX = this.x - offset;
+    ctx.drawImage(this.image, renderX, this.y, this.width, this.height);
   }
 }

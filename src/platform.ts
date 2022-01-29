@@ -10,8 +10,6 @@ export class Platform {
   y: number;
   width: number;
   height: number;
-  speed: number;
-  dx: number;
   image: HTMLImageElement;
 
   constructor(props: PlatformProps) {
@@ -20,15 +18,10 @@ export class Platform {
     this.y = props.y;
     this.width = this.image.width;
     this.height = this.image.height;
-    this.speed = 6;
-    this.dx = 0;
   }
 
-  draw(ctx: CanvasRenderingContext2D): void {
-    ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
-  }
-
-  update(): void {
-    this.x += this.dx;
+  draw(ctx: CanvasRenderingContext2D, offset: number): void {
+    let renderX: number = this.x - offset;
+    ctx.drawImage(this.image, renderX, this.y, this.width, this.height);
   }
 }
