@@ -29,13 +29,12 @@ export class Goomba {
     this.offset = 100;
   }
 
-  draw(ctx: CanvasRenderingContext2D): void {
-    ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
+  draw(ctx: CanvasRenderingContext2D, worldOffset: number): void {
+    let renderX = this.x - worldOffset;
+    ctx.drawImage(this.image, renderX, this.y, this.width, this.height);
   }
 
-  update(ctx: CanvasRenderingContext2D): void {
-    this.draw(ctx);
-
+  update(): void {
     if (this.x >= this.initalX + this.offset) this.dx = -this.speed;
     if (this.x <= this.initalX - this.offset) this.dx = this.speed;
 

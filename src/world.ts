@@ -6,16 +6,18 @@ import { Generics } from "./generics";
 import { Goomba } from "./goomba";
 import {
   generateNewPlatforms,
+  generateNewGoombas,
+  regeneratePlatforms,
+  regenerateGoombas,
   getBackgroundInstance,
   getHillInstance,
-  regeneratePlatforms,
 } from "./utils";
 
 class World {
   canvas: HTMLCanvasElement;
   ctx: CanvasRenderingContext2D;
   mario: Mario;
-  goomba: Goomba;
+  goombas: Goomba[];
   platforms: Platform[];
   scrollOffset: number;
   background: Generics;
@@ -44,13 +46,12 @@ class World {
       x: state?.mario?.x || 100,
       y: 100,
     });
-    this.goomba = new Goomba({
-      x: state?.goomba?.x || 900,
-      y: 522,
-    });
     this.platforms = state?.platforms
       ? regeneratePlatforms(state.platforms)
       : generateNewPlatforms();
+    this.goombas = state?.goombas
+      ? regenerateGoombas(state.goombas)
+      : generateNewGoombas(this.platforms);
     this.background = getBackgroundInstance();
     this.hill = getHillInstance({
       x: state?.hill?.x || -1,
@@ -64,12 +65,13 @@ class World {
     this.background.draw(ctx);
     this.hill.draw(ctx, this.scrollOffset);
     this.platforms.forEach((platform) => platform.draw(ctx, this.scrollOffset));
-    this.goomba.draw(ctx);
+    this.goombas.forEach((goomba) => goomba.draw(ctx, this.scrollOffset));
     this.mario.draw(ctx);
   }
 
   gameLoop(): void {
     this.mario.update();
+    this.goombas.forEach((goomba) => goomba.update());
 
     this.animateCharaters();
     this.marioPlatformCollision();
@@ -199,7 +201,7 @@ class World {
   save = (): void => {
     const state = {
       mario: this.mario,
-      goomba: this.goomba,
+      goombas: this.goombas,
       platforms: this.platforms,
       scrollOffset: this.scrollOffset,
       background: this.background,
