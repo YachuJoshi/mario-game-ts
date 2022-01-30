@@ -42,7 +42,7 @@ export function generateNewGoombas(platforms: Platform[]): Goomba[] {
   let goombas: Goomba[] = [];
   const P_WIDTH = 580;
   const G_WIDTH = 86;
-  const GOOMBA_GAP = 56;
+  const GOOMBA_GAP = 90;
 
   for (let i = 1; i < platforms.length - 1; i++) {
     const platform = platforms[i];

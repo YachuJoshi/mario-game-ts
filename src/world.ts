@@ -19,6 +19,7 @@ class World {
   mario: Mario;
   goombas: Goomba[];
   platforms: Platform[];
+  isMarioAlive: boolean;
   scrollOffset: number;
   background: Generics;
   hill: Generics;
@@ -40,6 +41,7 @@ class World {
       KeyA: false,
       KeyD: false,
     };
+    this.isMarioAlive = true;
 
     const state = JSON.parse(localStorage.getItem("state") || "{}");
     this.mario = new Mario({
@@ -75,6 +77,7 @@ class World {
 
     this.animateCharaters();
     this.marioPlatformCollision();
+    this.marioGoombaCollision();
     this.setMarioSprite();
 
     // Win Condition
@@ -84,7 +87,9 @@ class World {
 
     // Lose Condition
     if (this.mario.y > CANVAS_HEIGHT) {
-      this.init();
+      setTimeout(() => {
+        this.init();
+      }, 0);
     }
   }
 
@@ -160,6 +165,45 @@ class World {
         this.mario.dy = 0;
       }
     });
+  }
+
+  marioGoombaCollision = (): void => {
+    this.goombas.forEach((goomba) => {
+      if (
+        this.mario.y + this.mario.height > goomba.y &&
+        this.mario.y + this.mario.height + this.mario.dy >= goomba.y &&
+        this.mario.x + this.mario.width > goomba.x - this.scrollOffset &&
+        this.mario.x < goomba.x + goomba.width - this.scrollOffset
+      ) {
+        this.handleMarioGoombaCollision(this.mario, goomba);
+      }
+    });
+  };
+
+  handleMarioGoombaCollision(mario: Mario, goomba: Goomba): void {
+    // Ground Collision
+    if (
+      mario.x + mario.width > goomba.x - this.scrollOffset &&
+      mario.x < goomba.x + goomba.width - this.scrollOffset &&
+      mario.y > 450 &&
+      mario.y < 460
+    ) {
+      this.isMarioAlive = false;
+      setTimeout(() => {
+        this.init();
+      }, 0);
+      return;
+    }
+
+    // Flight Collision
+    if (
+      mario.y + mario.height > goomba.y &&
+      mario.x + mario.width > goomba.x - this.scrollOffset &&
+      mario.x < goomba.x + goomba.width - this.scrollOffset &&
+      !(mario.y > 450 && mario.y < 460)
+    ) {
+      this.goombas = this.goombas.filter((g) => g !== goomba);
+    }
   }
 
   setupEventListener(): void {
